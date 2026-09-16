@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reading nook — build plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F3EA;
+    --card: #FFFFFF;
+    --ink: #26261F;
+    --ink-soft: #5A5A4E;
+    --green: #1F4A34;
+    --green-tint: #E9EFE7;
+    --wood: #B4864F;
+    --wood-dark: #7C5A34;
+    --line: #DAD3C0;
+    --glass: #D7E4DC;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  nav {
+    position: sticky;
+    top: 0;
+    background: rgba(247, 243, 234, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    z-index: 10;
+  }
+
+  nav .wrap {
+    display: flex;
+    gap: 28px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  nav a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 2px;
+  }
+
+  nav a:hover { color: var(--green); border-bottom-color: var(--wood); }
+
+  header.hero {
+    padding: 72px 0 48px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  header.hero h1 {
+    font-size: 42px;
+    letter-spacing: -0.01em;
+  }
+
+  header.hero p.dek {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+    max-width: 46ch;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 24px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    border-left: 2px solid var(--wood);
+    padding-left: 10px;
+  }
+
+  .meta-item .num {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    display: block;
+  }
+
+  .meta-item .label {
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  section {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  section:last-of-type { border-bottom: none; }
+
+  section > .kicker {
+    font-size: 13px;
+    color: var(--wood-dark);
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  section h2 {
+    font-size: 27px;
+    margin-bottom: 18px;
+  }
+
+  section p {
+    max-width: 62ch;
+    color: var(--ink);
+  }
+
+  section p.lead {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 58ch;
+  }
+
+  .figure {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 20px;
+    margin: 28px 0;
+  }
+
+  .figure svg { display: block; width: 100%; height: auto; }
+
+  .figure figcaption {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  .spec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 32px;
+    margin-top: 24px;
+  }
+
+  .spec-grid dt {
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  .spec-grid dd {
+    margin: 2px 0 0;
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+  }
+
+  .plan-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 28px 28px 8px;
+    margin-top: 24px;
+  }
+
+  .plan-card h3 {
+    font-size: 20px;
+    color: var(--green);
+  }
+
+  .plan-card .tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--green);
+    background: var(--green-tint);
+    padding: 3px 10px;
+    border-radius: 3px;
+    margin-bottom: 10px;
+  }
+
+  ul.cutlist {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 24px;
+  }
+
+  ul.cutlist li {
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 15px;
+  }
+
+  ul.cutlist li .piece { color: var(--ink); }
+  ul.cutlist li .dims {
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .callout {
+    border-left: 3px solid var(--wood);
+    background: var(--green-tint);
+    padding: 16px 20px;
+    border-radius: 0 4px 4px 0;
+    margin: 24px 0;
+    font-size: 15px;
+    color: var(--ink);
+  }
+
+  .callout strong { color: var(--green); }
+
+  .cutlist-group {
+    margin-top: 28px;
+  }
+
+  .cutlist-group h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--green);
+    margin: 0 0 4px;
+  }
+
+  .materials-summary {
+    background: var(--green-tint);
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+
+  .materials-summary .num {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    color: var(--green);
+    margin-right: 6px;
+  }
+
+  .materials-summary ul {
+    margin: 8px 0 0;
+    padding-left: 18px;
+  }
+
+  .materials-summary li { margin-bottom: 4px; }
+
+  footer {
+    padding: 40px 0 64px;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  @media (max-width: 600px) {
+    header.hero { padding: 48px 0 36px; }
+    header.hero h1 { font-size: 32px; }
+    .spec-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="#space">The space</a>
+    <a href="#bench">The bench</a>
+    <a href="#plan-a">Plan A</a>
+    <a href="#plan-b">Plan B</a>
+    <a href="#decision">Open decision</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Reading nook</h1>
+    <p class="dek">Turning the window bay into a built-in bench and flanking shelving — two directions depending on what happens with the litter box.</p>
+    <div class="meta-row">
+      <div class="meta-item"><span class="num">102"</span><span class="label">window wall</span></div>
+      <div class="meta-item"><span class="num">81"</span><span class="label">floor to ceiling</span></div>
+      <div class="meta-item"><span class="num">31.5"</span><span class="label">sill height</span></div>
+      <div class="meta-item"><span class="num">2</span><span class="label">plan options</span></div>
+    </div>
+  </div>
+</header>
+
+<section id="space">
+  <div class="wrap">
+    <span class="kicker">The space</span>
+    <h2>An uneven bay, not a square one</h2>
+    <p class="lead">The window wall is 102" across with a 79" window centered in it. The two return walls that box in the nook aren't the same length — one is 4⅛" deeper than the other — so the footprint is a shallow trapezoid, not a rectangle.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 640 300" role="img" aria-label="Floor plan of the reading nook showing the 102 inch window wall with a 79 inch window, a 40 and one quarter inch deep wall on the litter box side, and a 36 and one eighth inch deep wall on the bookshelf side">
+        <line x1="60" y1="30" x2="560" y2="30" stroke="var(--ink-soft)" stroke-width="1"/>
+        <line x1="60" y1="24" x2="60" y2="36" stroke="var(--ink-soft)" stroke-width="1"/>
+        <line x1="560" y1="24" x2="560" y2="36" stroke="var(--ink-soft)" stroke-width="1"/>
+        <text x="310" y="20" text-anchor="middle" font-family="Inter" font-size="13" fill="var(--ink-soft)">102" window wall</text>
+
+        <polygon points="60,60 560,60 560,237 60,257" fill="var(--bg)" stroke="var(--ink)" stroke-width="1"/>
+
+        <rect x="116" y="48" width="388" height="12" fill="var(--glass)" stroke="var(--ink)" stroke-width="1"/>
+        <text x="310" y="90" text-anchor="middle" font-family="Inter" font-size="13" fill="var(--ink-soft)">window — 79"</text>
+
+        <text x="90" y="130" font-family="Inter" font-size="13" fill="var(--ink)">
+          <tspan x="90" dy="0">40 ¼" deep</tspan>
+          <tspan x="90" dy="18" fill="var(--ink-soft)">litter box, switch + outlet</tspan>
+        </text>
+
+        <text x="530" y="130" text-anchor="end" font-family="Inter" font-size="13" fill="var(--ink)">
+          <tspan x="530" dy="0">36 ⅛" deep</tspan>
+          <tspan x="530" dy="18" fill="var(--ink-soft)">bookshelf tower</tspan>
+        </text>
+      </svg>
+      <figcaption>Floor plan, viewed from above — bench runs along the back, towers on each return wall</figcaption>
+    </div>
+  </div>
+</section>
+
+<section id="bench">
+  <div class="wrap">
+    <span class="kicker">Shared across both plans</span>
+    <h2>The bench under the window</h2>
+    <p class="lead">The sill sits 31.5" up, which sets the ceiling on how tall the seat can be. A 19" seat leaves about 12" of reveal above the cushion before hitting the glass — enough for a cushion and a couple of throw pillows without crowding the window.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 640 460" role="img" aria-label="Front elevation of the window wall showing the 81 inch ceiling height, window starting at the 31.5 inch sill, and a 19 inch tall bench spanning the full 102 inch wall">
+        <line x1="35" y1="40" x2="35" y2="437" stroke="var(--ink-soft)" stroke-width="1"/>
+        <line x1="29" y1="40" x2="41" y2="40" stroke="var(--ink-soft)" stroke-width="1"/>
+        <line x1="29" y1="437" x2="41" y2="437" stroke="var(--ink-soft)" stroke-width="1"/>
+        <text x="20" y="242" text-anchor="middle" font-family="Inter" font-size="13" fill="var(--ink-soft)" transform="rotate(-90 20 242)">81"</text>
+
+        <rect x="60" y="40" width="500" height="397" fill="none" stroke="var(--ink)" stroke-width="1"/>
+        <rect x="116" y="40" width="388" height="243" fill="var(--glass)" stroke="var(--ink)" stroke-width="1"/>
+        <text x="310" y="165" text-anchor="middle" font-family="Inter" font-size="13" fill="var(--ink-soft)">window</text>
+
+        <line x1="48" y1="283" x2="48" y2="437" stroke="var(--ink-soft)" stroke-width="1"/>
+        <line x1="42" y1="283" x2="54" y2="283" stroke="var(--ink-soft)" stroke-width="1"/>
+        <line x1="42" y1="437" x2="54" y2="437" stroke="var(--ink-soft)" stroke-width="1"/>
+
+        <rect x="60" y="344" width="500" height="93" fill="var(--wood)" fill-opacity="0.25" stroke="var(--wood-dark)" stroke-width="1"/>
+        <text x="310" y="395" text-anchor="middle" font-family="Inter" font-size="13" fill="var(--wood-dark)">bench seat — 19" tall</text>
+
+        <line x1="60" y1="452" x2="560" y2="452" stroke="var(--ink-soft)" stroke-width="1"/>
+        <line x1="60" y1="446" x2="60" y2="458" stroke="var(--ink-soft)" stroke-width="1"/>
+        <line x1="560" y1="446" x2="560" y2="458" stroke="var(--ink-soft)" stroke-width="1"/>
+        <text x="310" y="472" text-anchor="middle" font-family="Inter" font-size="13" fill="var(--ink-soft)">102"</text>
+      </svg>
+      <figcaption>Front elevation of the window wall — 31.5" sill, 19" bench</figcaption>
+    </div>
+
+    <dl class="spec-grid">
+      <div><dt>Seat height</dt><dd>19"</dd></div>
+      <div><dt>Seat depth</dt><dd>20"</dd></div>
+      <div><dt>Total run</dt><dd>102"</dd></div>
+      <div><dt>Storage below</dt><dd>open cubbies, 4 openings</dd></div>
+    </dl>
+
+    <div class="cutlist-group">
+      <h4>Carcass — ¾" plywood</h4>
+      <ul class="cutlist">
+        <li><span class="piece">End panels</span><span class="dims">2 @ 20"D × 19"H</span></li>
+        <li><span class="piece">Dividers (3 openings between 4 cubbies)</span><span class="dims">3 @ 20"D × 19"H</span></li>
+        <li><span class="piece">Bottom panel</span><span class="dims">1 @ 20"D × 100½"L (see note)</span></li>
+      </ul>
+    </div>
+
+    <div class="cutlist-group">
+      <h4>Face frame &amp; trim — 1×2 poplar</h4>
+      <ul class="cutlist">
+        <li><span class="piece">Stiles (2 ends + 3 dividers)</span><span class="dims">5 @ 19"L</span></li>
+        <li><span class="piece">Top rail, full length</span><span class="dims">1 @ 102"L</span></li>
+        <li><span class="piece">Back ledger (screws to wall studs)</span><span class="dims">1 @ 102"L, 1×3</span></li>
+        <li><span class="piece">Toe kick face</span><span class="dims">1 @ 102"L × 3"H, ¼" ply</span></li>
+      </ul>
+    </div>
+
+    <div class="cutlist-group">
+      <h4>Hardware &amp; finish</h4>
+      <ul class="cutlist">
+        <li><span class="piece">Wood screws / pocket screws + glue</span><span class="dims">1 box each</span></li>
+        <li><span class="piece">Edge banding (for ply edges)</span><span class="dims">~15 linear ft</span></li>
+        <li><span class="piece">Paintable caulk</span><span class="dims">2 tubes</span></li>
+        <li><span class="piece">Primer + trim paint, matched to existing white</span><span class="dims">1 qt each</span></li>
+        <li><span class="piece">Bench cushion, cut to finished top</span><span class="dims">102" × 20", order after box is built</span></li>
+      </ul>
+    </div>
+
+    <div class="materials-summary">
+      <span class="num">~1½ sheets</span>of ¾" plywood
+      <ul>
+        <li>The 100½" bottom panel is longer than a standard 96" sheet — splice two pieces with a center support cleat underneath (hidden by the cushion) rather than special-ordering a longer sheet.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="plan-a">
+  <div class="wrap">
+    <span class="kicker">Option 1</span>
+    <span class="plan-card-tag"></span>
+    <h2>Plan A — keep the litter box, build it flexible</h2>
+    <p class="lead">The deeper return wall (40¼") keeps the litter cabinet, but built as a standard-depth carcass with adjustable shelf pins inside — so it can be repurposed later without tearing anything out.</p>
+
+    <div class="plan-card">
+      <span class="tag">40¼" wall — tower built 22"W × 24"D × 81"H</span>
+      <h3>Litter tower — built to convert</h3>
+      <p style="font-size: 14px; color: var(--ink-soft); margin-top: -6px;">Sides run full height so the lower cabinet and upper shelving read as one carcass — the door section is what changes later, not the box.</p>
+
+      <div class="cutlist-group">
+        <h4>Carcass — ¾" plywood</h4>
+        <ul class="cutlist">
+          <li><span class="piece">Side panels, full height</span><span class="dims">2 @ 24"D × 81"H</span></li>
+          <li><span class="piece">Bottom panel</span><span class="dims">1 @ 24"D × 20½"W</span></li>
+          <li><span class="piece">Fixed shelf at 30" line (caps cabinet, floor of open shelving)</span><span class="dims">1 @ 24"D × 20½"W</span></li>
+          <li><span class="piece">Top cap</span><span class="dims">1 @ 24"D × 20½"W</span></li>
+          <li><span class="piece">Adjustable shelves, upper section</span><span class="dims">3 @ 24"D × 20½"W</span></li>
+        </ul>
+      </div>
+
+      <div class="cutlist-group">
+        <h4>Door &amp; access panel</h4>
+        <ul class="cutlist">
+          <li><span class="piece">Cabinet door, ¾" ply or MDF flat panel</span><span class="dims">1 @ 20½"W × 29¼"H</span></li>
+          <li><span class="piece">Switch/outlet access panel</span><span class="dims">1 @ ~10"W × 8"H</span></li>
+          <li><span class="piece">Door hinges</span><span class="dims">2</span></li>
+          <li><span class="piece">Door pull</span><span class="dims">1</span></li>
+          <li><span class="piece">Magnetic catches, for access panel</span><span class="dims">2</span></li>
+        </ul>
+      </div>
+
+      <div class="cutlist-group">
+        <h4>Face frame &amp; hardware</h4>
+        <ul class="cutlist">
+          <li><span class="piece">Stiles, 1×2 poplar</span><span class="dims">2 @ 81"L</span></li>
+          <li><span class="piece">Rails — top, bottom, 30" line, 1×2 poplar</span><span class="dims">3 @ 22"L</span></li>
+          <li><span class="piece">Shelf pins</span><span class="dims">16 (4 sets of 4, for 3 adjustable shelves + future flexibility)</span></li>
+          <li><span class="piece">Edge banding</span><span class="dims">~20 linear ft</span></li>
+        </ul>
+      </div>
+
+      <div class="materials-summary">
+        <span class="num">~2 sheets</span>of ¾" plywood, plus the door blank
+        <ul>
+          <li>Consider a louvered or vented door instead of a solid flat panel, for airflow around the litter box.</li>
+          <li>Only using 24" of the available 40¼" depth — the remaining ~16" behind the cabinet can hold a slim pull-out for litter mats or supplies rather than sitting empty.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="figure">
+      <svg viewBox="0 0 400 300" role="img" aria-label="Front elevation of the flexible litter box tower showing a lower cabinet with door up to 30 inches, an access panel for the switch and outlet, and open adjustable shelving above up to the 81 inch ceiling">
+        <rect x="60" y="20" width="200" height="264" fill="none" stroke="var(--ink)" stroke-width="1"/>
+        <line x1="60" y1="196" x2="260" y2="196" stroke="var(--ink)" stroke-width="1"/>
+        <rect x="72" y="208" width="60" height="30" fill="none" stroke="var(--ink-soft)" stroke-width="0.75" stroke-dasharray="3 3"/>
+        <text x="102" y="227" text-anchor="middle" font-family="Inter" font-size="10" fill="var(--ink-soft)">switch /<tspan x="102" dy="11">outlet</tspan></text>
+        <line x1="60" y1="72" x2="260" y2="72" stroke="var(--ink-soft)" stroke-width="0.5"/>
+        <line x1="60" y1="124" x2="260" y2="124" stroke="var(--ink-soft)" stroke-width="0.5"/>
+        <text x="160" y="50" text-anchor="middle" font-family="Inter" font-size="12" fill="var(--ink-soft)">adjustable shelves</text>
+        <text x="160" y="240" text-anchor="middle" font-family="Inter" font-size="12" fill="var(--wood-dark)">litter cabinet, door</text>
+        <text x="160" y="204" text-anchor="middle" font-family="Inter" font-size="10" fill="var(--ink-soft)">30" line</text>
+      </svg>
+      <figcaption>Litter tower elevation — door section swaps for shelves later</figcaption>
+    </div>
+
+    <p>When the litter box eventually goes, the door comes off, shelf pins drop in at the same spacing as the tower above, and the whole thing reads as one continuous bookcase — no rebuild.</p>
+  </div>
+</section>
+
+<section id="plan-b">
+  <div class="wrap">
+    <span class="kicker">Option 2</span>
+    <h2>Plan B — no litter box, symmetrical shelving</h2>
+    <p class="lead">If the litter box moves out of the room, both return walls become matching open bookcases. Since they're 4" different in depth, both towers get built to the shallower measurement (36⅛") for a clean, symmetrical front — the extra depth on the deeper side just gets furred in behind the cabinet back.</p>
+
+    <div class="plan-card">
+      <span class="tag">Both walls — 22"W × 36⅛"D × 81"H, per tower</span>
+      <h3>Matching bookcase towers</h3>
+      <p style="font-size: 14px; color: var(--ink-soft); margin-top: -6px;">Cut list below is per tower — double everything for both sides, plus the one-off filler panel for the deeper wall.</p>
+
+      <div class="cutlist-group">
+        <h4>Carcass — ¾" plywood (× 2 towers)</h4>
+        <ul class="cutlist">
+          <li><span class="piece">Side panels</span><span class="dims">2 per tower @ 36⅛"D × 81"H</span></li>
+          <li><span class="piece">Bottom panel</span><span class="dims">1 per tower @ 36⅛"D × 20½"W</span></li>
+          <li><span class="piece">Top cap</span><span class="dims">1 per tower @ 36⅛"D × 20½"W</span></li>
+          <li><span class="piece">Adjustable shelves</span><span class="dims">4 per tower @ 36⅛"D × 20½"W</span></li>
+        </ul>
+      </div>
+
+      <div class="cutlist-group">
+        <h4>Face frame — 1×2 poplar (× 2 towers)</h4>
+        <ul class="cutlist">
+          <li><span class="piece">Stiles</span><span class="dims">2 per tower @ 81"L</span></li>
+          <li><span class="piece">Rails — top &amp; bottom</span><span class="dims">2 per tower @ 22"L</span></li>
+        </ul>
+      </div>
+
+      <div class="cutlist-group">
+        <h4>Litter-box-wall filler</h4>
+        <ul class="cutlist">
+          <li><span class="piece">Furring/filler panel closing the extra depth</span><span class="dims">1 @ 4⅛"D × 81"H × 22"W</span></li>
+        </ul>
+      </div>
+
+      <div class="cutlist-group">
+        <h4>Hardware &amp; finish</h4>
+        <ul class="cutlist">
+          <li><span class="piece">Shelf pins</span><span class="dims">32 (4 sets of 4 per shelf, 8 shelves total)</span></li>
+          <li><span class="piece">Edge banding</span><span class="dims">~45 linear ft, both towers</span></li>
+          <li><span class="piece">Wood screws / pocket screws + glue</span><span class="dims">1 box each</span></li>
+          <li><span class="piece">Primer + trim paint, matched to existing white</span><span class="dims">1 qt each</span></li>
+        </ul>
+      </div>
+
+      <div class="materials-summary">
+        <span class="num">~5 sheets</span>of ¾" plywood, for both towers combined
+        <ul>
+          <li>No doors needed on either side — simpler and cheaper build than Plan A.</li>
+          <li>Confirm the 22" tower width against how much space you actually want to give up on each side of the window before cutting — it's not fixed by any wall measurement, just a comfortable starting width.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="figure">
+      <svg viewBox="0 0 640 300" role="img" aria-label="Front elevation of two matching bookcase towers flanking the bench, both built to the shallower 36 and one eighth inch depth with evenly spaced adjustable shelves">
+        <rect x="60" y="20" width="180" height="264" fill="none" stroke="var(--ink)" stroke-width="1"/>
+        <rect x="400" y="20" width="180" height="264" fill="none" stroke="var(--ink)" stroke-width="1"/>
+        <g stroke="var(--ink-soft)" stroke-width="0.5">
+          <line x1="60" y1="72" x2="240" y2="72"/>
+          <line x1="60" y1="124" x2="240" y2="124"/>
+          <line x1="60" y1="176" x2="240" y2="176"/>
+          <line x1="60" y1="228" x2="240" y2="228"/>
+          <line x1="400" y1="72" x2="580" y2="72"/>
+          <line x1="400" y1="124" x2="580" y2="124"/>
+          <line x1="400" y1="176" x2="580" y2="176"/>
+          <line x1="400" y1="228" x2="580" y2="228"/>
+        </g>
+        <text x="150" y="296" text-anchor="middle" font-family="Inter" font-size="12" fill="var(--ink-soft)">litter box wall</text>
+        <text x="490" y="296" text-anchor="middle" font-family="Inter" font-size="12" fill="var(--ink-soft)">bookshelf wall</text>
+        <rect x="260" y="230" width="120" height="54" fill="var(--wood)" fill-opacity="0.25" stroke="var(--wood-dark)" stroke-width="1"/>
+        <text x="320" y="260" text-anchor="middle" font-family="Inter" font-size="10" fill="var(--wood-dark)">bench</text>
+      </svg>
+      <figcaption>Both towers built to the same 36⅛" depth for a symmetrical front</figcaption>
+    </div>
+  </div>
+</section>
+
+<section id="decision">
+  <div class="wrap">
+    <span class="kicker">Before building the towers</span>
+    <h2>Open decision: relocate the litter box?</h2>
+    <p class="lead">The bench across the window wall is identical in both plans, so that piece can be built first regardless. The two side towers are where the plans diverge — worth deciding before cutting the return-wall cabinets.</p>
+
+    <div class="callout">
+      <strong>Note:</strong> if going with Plan A, confirm the cabinet's interior clear opening against the actual litter box footprint before finalizing the carcass width — leave a little slack for a different box shape down the road.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Reading nook build plan — dimensions current as of this survey. Update this page as measurements or decisions change.
+  </div>
+</footer>
+
+</body>
+</html>
